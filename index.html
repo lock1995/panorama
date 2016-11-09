@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Panorama</title>
+    <meta name="description" content="Panorama — A-Frame">
+    <script src="js/aframe.js"></script>
+    <!-- 切换场景的动画 -->
+    <script src="https://npmcdn.com/aframe-animation-component@3.0.1"></script>
+    <!-- 光标移到thumb时的动画 -->
+    <script src="https://npmcdn.com/aframe-event-set-component@3.0.1"></script>
+    <script src="https://npmcdn.com/aframe-layout-component@3.0.1"></script>
+    <script src="https://npmcdn.com/aframe-template-component@3.0.1"></script>
+    <script src="components/set-image.js"></script>
+    <script src="components/update-raycaster.js"></script>
+  </head>
+  <body>
+    <a-scene id="scene">
+      <a-assets>
+        <img id="room" crossorigin="anonymous" src="images/1.jpg">
+        <img id="outside" crossorigin="anonymous" src="images/3.jpg">
+        <img id="sky3" crossorigin="anonymous" src="images/4.jpg">
+        <img id="thumb" crossorigin="anonymous" src="images/arrow1.jpg">
+        <!-- <img id="outside-thumb" crossorigin="anonymous" src="images/arrow1.jpg"> -->
+
+        <script id="link" type="text/nunjucks">
+          <a-plane class="link" height="1" width="1"
+            material="shader: flat; src: {{ thumb }}"
+            event-set__1="_event: mousedown; scale: 1 1 1"
+            event-set__2="_event: mouseup; scale: 1.2 1.2 1"
+            event-set__3="_event: mouseenter; scale: 1.2 1.2 1"
+            event-set__4="_event: mouseleave; scale: 1 1 1"
+            set-image="on: click; target: #image-360; src: {{ src }}"
+            update-raycaster="#cursor"></a-plane>
+        </script>
+      </a-assets>
+
+      <a-sky id="image-360" src="#room" radius="10"></a-sky>
+
+      <!-- <a-entity id="link1" layout="type: line; margin: 1.5" position="3.3 -1 -4" rotation="-80 -15 0">
+        <a-entity template="src: #link" data-src="#room" data-thumb="#thumb"></a-entity>
+      </a-entity>
+      <a-entity id="link2" layout="type: line; margin: 1.5" position="-2.2 -1 5" rotation="-90 140 0">
+        <a-entity template="src: #link" data-src="#sky3" data-thumb="#thumb"></a-entity>
+      </a-entity> -->
+
+      <a-entity camera look-controls>
+        <a-cursor id="cursor"
+          animation__click="property: scale; startEvents: click; from: 0.1 0.1 0.1; to: 1 1 1; dur: 150"
+          animation__fusing="property: fusing; startEvents: fusing; from: 1 1 1; to: 0.1 0.1 0.1; dur: 1500"
+          event-set__1="_event: mouseenter; color: springgreen"
+          event-set__2="_event: mouseleave; color: black"
+          raycaster="objects: .link">
+        </a-cursor>
+      </a-entity>
+
+    </a-scene>
+
+    <script src="js/jquery-3.1.0.min.js"></script>
+    <script>
+      let createArrow = (item) => {
+        let html = '<a-entity id="' + item.id + '" class="arrow" layout="type: line; margin: 1.5" position="' + item.position + '" rotation="' + item.rotation + '">'
+        + '<a-entity template="src: #link" data-src="' + item.scene + '" data-thumb="#thumb"></a-entity>'
+        + '</a-entity>'
+        $('#scene').append(html)
+      }
+
+      let arrow1 = {
+        id: 'link1',
+        position: '3.3 -1 -4',
+        rotation: '-80 -15 0',
+        scene: '#outside'
+      },
+      arrow2 = {
+        id: 'link2',
+        position: '-2.2 -1 5',
+        rotation: '-90 140 0',
+        scene: '#sky3'
+      }
+
+      createArrow(arrow1)
+      createArrow(arrow2)
+
+      let name = $('#image-360').attr('src')
+      $('#image-360').attr('src') = '#sky3'
+      if (name == '#room') {
+        $('.arrow').remove()
+        createArrow(arrow1)
+        createArrow(arrow2)
+      } else if (name == '#sky3') {
+        $('.arrow').remove()
+        createArrow(arrow1)
+        // createArrow(arrow2)
+      }
+
+      // function listen () {
+      //   $('.link').bind('click', function(){
+      //     let name = $('#image-360').attr('src')
+      //     if (name == '#room') {
+      //       $('.arrow').remove()
+      //       createArrow(arrow1)
+      //       createArrow(arrow2)
+      //       listen()
+      //     } else if (name == '#sky3') {
+      //       $('.arrow').remove()
+      //       createArrow(arrow1)
+      //       // createArrow(arrow2)
+      //       listen()
+      //     }
+      //   })
+      // }
+
+
+
+    </script>
+  </body>
+</html>
